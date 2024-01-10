@@ -20,6 +20,7 @@ from langchain.chains import LLMMathChain
 from langchain.agents import AgentExecutor, AgentType, initialize_agent, create_csv_agent
 from langchain.chat_models import ChatOpenAI
 from langchain.tools import BaseTool, StructuredTool, Tool, tool, DuckDuckGoSearchRun
+from langchain.schema import HumanMessage, SystemMessage
 
 from rag import get_condense_prompt_qa_chain
 
@@ -140,8 +141,29 @@ def analyze_costs(user_query:str) -> str:
     )
     return agent_csv.run(user_query)
 
+# execute a blocking job in Domino
+@tool("generate_code", return_direct=True)
+def generate_code(task:str):
+    '''Generates code and saves it to a file'''
+    if not task:
+        return None
+    messages = [
+    SystemMessage(
+        content="You are a helpful assistant that generates code.just output code without any commentary"
+        ),
+    HumanMessage(
+        content= task
+        ),
+    ]
+    # Writing to the file
+    timestamp = time.time()
+    code_file_name = f"agent-code-{timestamp}.py"
+    subprocess.run(["touch", code_file_name])
+    with open(code_file_name, 'w') as file:
+        file.write(llm(messages).content)
+    
 
-tools = [search_tool, math_tool, create_experiment, create_run_job, analyze_costs, ddl_rag]
+tools = [search_tool, math_tool, create_experiment, create_run_job, analyze_costs, ddl_rag, generate_code]
 
 agent = initialize_agent(
     tools,

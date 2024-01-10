@@ -2,6 +2,7 @@ import json
 import mlflow
 import os
 import pandas as pd
+import pickle
 import requests
 import subprocess
 import time
@@ -12,7 +13,7 @@ from datetime import timedelta
 
 from domino import Domino
 from IPython.core.magic import register_line_magic, needs_local_scope
-
+from pydantic import BaseModel, Field
 
 from langchain import hub
 from langchain.chains import LLMMathChain
@@ -20,12 +21,20 @@ from langchain.agents import AgentExecutor, AgentType, initialize_agent, create_
 from langchain.chat_models import ChatOpenAI
 from langchain.tools import BaseTool, StructuredTool, Tool, tool, DuckDuckGoSearchRun
 
-from pydantic import BaseModel, Field
+from rag import get_condense_prompt_qa_chain
+
 
 warnings.filterwarnings('ignore')
 llm = ChatOpenAI(temperature=0)
 
 search = DuckDuckGoSearchRun()
+
+# Load the embeddings from the pickle file; change the location if needed
+if 'store' not in locals() or store is None:
+    with open("faiss_doc_store.pkl", "rb") as f:
+        store = pickle.load(f)
+
+qa = get_condense_prompt_qa_chain(store)
 
 search_tool = Tool.from_function(
     func=search.run,
@@ -40,6 +49,14 @@ math_tool = Tool.from_function(
     name="Calculator",
     description="Useful for when you are asked to perform math calculations"
 )
+
+# RAG tool to answer queries about Domino
+@tool("ddl_rag", return_direct=True)
+def ddl_rag(user_query:str) -> str:
+    """Answer questions about Domino product features, technical or ambigous questions"""
+    if not user_query:
+        return None
+    return qa({"question": user_query})['answer']
 
 # create an experiment in MLflow
 @tool("create_experiment", return_direct=True)
@@ -124,7 +141,7 @@ def analyze_costs(user_query:str) -> str:
     return agent_csv.run(user_query)
 
 
-tools = [search_tool, math_tool,create_experiment,create_run_job, analyze_costs]
+tools = [search_tool, math_tool, create_experiment, create_run_job, analyze_costs, ddl_rag]
 
 agent = initialize_agent(
     tools,

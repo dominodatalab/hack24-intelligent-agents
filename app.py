@@ -106,7 +106,7 @@ def analyze_costs(user_query:str) -> str:
     # get all the data and write it to a csv
     csv_file_name = 'control_centre_costs.csv'
     API_KEY = os.environ["DOMINO_USER_API_KEY"]
-    URL = "https://johnal33653.marketing-sandbox.domino.tech/v4/gateway/runs/getByBatchId"
+    URL = "https://johnal33586.marketing-sandbox.domino.tech/v4/gateway/runs/getByBatchId"
     headers = {'X-Domino-Api-Key': API_KEY}
     last_date = datetime.now().strftime('%Y-%m-%d')
     
@@ -150,7 +150,7 @@ def analyze_org_costs(user_query:str) -> str:
     """Answer usage and cost questions related to organizations for admins"""
     # Set your API key and domain
     API_KEY = os.environ["DOMINO_USER_API_KEY"]
-    DOMAIN = 'johnal33653.marketing-sandbox.domino.tech'
+    DOMAIN = 'johnal33586.marketing-sandbox.domino.tech'
     COST_SESSION_COOKIE = '76bc06ba-6b89-40c0-bb21-070b9eedc52d'
     
     # URL for the request
@@ -247,11 +247,12 @@ if prompt := st.chat_input(placeholder="Ask me a question!"):
     st.chat_message("user").write(prompt)
     with st.chat_message("assistant", avatar="💫"):
         message_placeholder = st.empty()
-        with st.spinner("Searching for the answer..."):
+        with st.spinner("Running..."):
             response = agent.run(prompt)
         # Define the basic input structure for the chains
         input_dict = {"input": prompt}
         memory.save_context(input_dict, {"output": response})
-        message_placeholder.markdown(response)
+        if response:
+            message_placeholder.markdown(response)
 
 

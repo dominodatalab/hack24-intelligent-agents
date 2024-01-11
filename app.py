@@ -19,7 +19,7 @@ from pydantic import BaseModel, Field
 from langchain import hub
 from langchain.chains import LLMMathChain
 from langchain import memory as lc_memory
-from langchain.agents import AgentExecutor, AgentType, initialize_agent
+from langchain.agents import AgentExecutor, AgentType, initialize_agent, create_csv_agent
 from langchain.chat_models import ChatOpenAI
 from langchain.tools import BaseTool, StructuredTool, Tool, tool, DuckDuckGoSearchRun
 from langchain.schema import HumanMessage, SystemMessage

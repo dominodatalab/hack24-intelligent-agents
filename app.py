@@ -251,6 +251,6 @@ if prompt := st.chat_input(placeholder="Ask me a question!"):
         # Define the basic input structure for the chains
         input_dict = {"input": prompt}
         memory.save_context(input_dict, {"output": response})
-        message_placeholder.markdown(full_response)
+        message_placeholder.markdown(response)
 
 

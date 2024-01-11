@@ -247,7 +247,8 @@ if prompt := st.chat_input(placeholder="Ask me a question!"):
     st.chat_message("user").write(prompt)
     with st.chat_message("assistant", avatar="💫"):
         message_placeholder = st.empty()
-        response = agent.run(prompt)
+        with st.spinner("Searching for the answer..."):
+            response = agent.run(prompt)
         # Define the basic input structure for the chains
         input_dict = {"input": prompt}
         memory.save_context(input_dict, {"output": response})

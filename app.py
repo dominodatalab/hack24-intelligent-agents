@@ -254,5 +254,7 @@ if prompt := st.chat_input(placeholder="Ask me a question!"):
         if response:
             memory.save_context(input_dict, {"output": response})
             message_placeholder.markdown(response)
+        else:
+            message_placeholder.markdown("Done")
 
 

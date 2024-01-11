@@ -245,7 +245,7 @@ for msg in st.session_state.langchain_messages:
 
 if prompt := st.chat_input(placeholder="Ask me a question!"):
     st.chat_message("user").write(prompt)
-    with st.chat_message("assistant", avatar=""):
+    with st.chat_message("assistant", avatar="💫"):
         message_placeholder = st.empty()
         response = agent.run(prompt)
         # Define the basic input structure for the chains

@@ -1,2 +1,2 @@
-# hack24-intelligent-agents
-Repo for the Intelligent Agents Hackathon 2024 team
+# Intelligent-agents
+Repo for the Orbit Intelligent Agent 2024 
